@@ -1,3 +1,42 @@
+ 📋 Git 工作流程
+
+  日常开发（在 dev 分支）
+
+  # 1. 确保在 dev 分支
+  git checkout dev
+
+  # 2. 拉取最新代码（如果团队协作）
+  git pull origin dev
+
+  # 3. 修改代码后提交
+  git add .
+  git commit -m "描述你的修改"
+  git push origin dev
+
+  合并到 main 分支
+
+  当 dev 分支的功能开发完成并测试通过后：
+
+  # 1. 切换到 main 分支
+  git checkout main
+
+  # 2. 拉取最新的 main（如果有其他人更新了）
+  git pull origin main
+
+  # 3. 合并 dev 分支到 main
+  git merge dev
+
+  # 4. 推送到 GitHub
+  git push origin main
+
+  ---
+  🔍 当前分支结构
+
+  * dev  (当前分支)  ← 你在这里开发
+    └─ main         ← 稳定版本
+
+  两个分支目前内容相同（都在同一个 commit: ddd225b）
+
 我来详细解释 .gitignore 中每个部分为什么要被忽略：
 
   1. Python 编译文件
