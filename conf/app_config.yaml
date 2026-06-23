@@ -42,4 +42,4 @@ es:
 
 llm:
   model_name: deepseek-chat
-  api_key: <deepseek_api_key>
+  api_key: sk-24b7d9bf39604287ba943d7faf9ff87d

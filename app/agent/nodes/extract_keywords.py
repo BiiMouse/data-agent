@@ -7,19 +7,22 @@ from app.agent.context import DataAgentContext
 from app.agent.state import DataAgentState
 from app.core.log import logger
 
-async def extract_keywords(state: DataAgentState, runtime: Runtime[DataAgentState]):
-    await asyncio.sleep(0.1)
+
+async def extract_keywords(state: DataAgentState, runtime: Runtime[DataAgentContext]):
+    # ？？？
+    await asyncio.sleep(1)
     # 第一种方式：流输出器
     # writer=get_stream_writer()
     # 第二种方式：runtime
     writer = runtime.stream_writer
     # 输出信息
-    writer({"stage":"提取关键字"})
+    writer({"stage": "提取关键字"})
     try:
         # 获取问题
         query = state["query"]
-        #定义词性
-        allowPOS=(
+
+        # 定义词性
+        allowPOS = (
             "n",  # 名词: 数据、服务器、表格
             "nr",  # 人名: 张三、李四
             "ns",  # 地名: 北京、上海
@@ -33,10 +36,17 @@ async def extract_keywords(state: DataAgentState, runtime: Runtime[DataAgentStat
             "i",  # 成语
             "l",  # 常用固定短语
         )
-        keywords = jieba.analyse.extract_tags(query, allowPOS=allowPOS)
-        keywords = list(set(keywords+[query]))
-        logger.info(f"提取关键成功: {keywords}")
-        return {"keywords": keywords}
+
+        # 提取关键字
+        keywords=jieba.analyse.extract_tags(query, allowPOS=allowPOS)
+
+        # 避免分词后，缺失语义，将问题添加到提词列表中
+        keywords=list(set(keywords+[query]))
+
+        logger.info(f"提取关键成功{keywords}")
+
+        return {"keywords":keywords}
     except Exception as e:
-        logger.error(f"提取关键词异常{e}")
+        logger.error(f"提取关键字异常{str(e)}")
+
         raise
