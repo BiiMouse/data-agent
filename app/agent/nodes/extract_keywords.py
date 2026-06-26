@@ -9,8 +9,6 @@ from app.core.log import logger
 
 
 async def extract_keywords(state: DataAgentState, runtime: Runtime[DataAgentContext]):
-    # ？？？
-    await asyncio.sleep(1)
     # 第一种方式：流输出器
     # writer=get_stream_writer()
     # 第二种方式：runtime

@@ -42,7 +42,7 @@ async def recall_column(state:DataAgentState,runtime:Runtime[DataAgentContext]):
 
         # 2.字段召回--qdrant
         #定义字典结构去除召回的重复字段信息
-        retrieved_column_map: dict[str, ColumnInfoQdrant]
+        retrieved_column_map: dict[str, ColumnInfoQdrant] = {}
 
         # 这段代码正在从 Qdrant 做向量召回,ColumnInfoQdrant 是专门适配 Qdrant 向量库存储结构的数据模型
         # 这段不是精确匹配，是向量相似度模糊召回，先把文字转数字向量，Qdrant 内部计算向量余弦相似度，返回「语义相近」的数据，属于模糊语义召回。
