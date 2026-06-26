@@ -18,6 +18,14 @@ from app.agent.nodes.recall_value import recall_value
 from app.agent.nodes.validate_sql import validate_sql
 
 from app.agent.state import DataAgentState
+from app.clients.embedding_client_manager import embedding_client_manager
+from app.clients.es_client_manager import es_client_manager
+from app.clients.mysql_client_manager import meta_mysql_client_manager
+from app.clients.qdrant_client_manager import qdrant_client_manager
+from app.repositories.es.values_es_repository import ValueEsRepository
+from app.repositories.mysql.meta_mysql_repository import MetaMysqlRepository
+from app.repositories.qdrant.column_qdrant_respository import ColumnQdrantRepository
+from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantRepository
 
 # 创建图
 graph_builder = StateGraph(state_schema=DataAgentState, context_schema=DataAgentContext)
@@ -67,11 +75,60 @@ graph = graph_builder.compile()
 # print(graph.get_graph().draw_mermaid())
 
 if __name__ == '__main__':
+
+    """
+    整体极简串一遍这段代码在干嘛
+    1. 先初始化向量库、ES、MySQL、向量模型 4 个客户端管理器；
+    2. 创建 MySQL 会话，分别实例化向量模型、ES/Qdrant/MySQL 数据库操作仓储；
+    3. 把所有模型、数据库仓储实例打包进 DataAgentContext 上下文（全局工具包）；
+    4. 把用户查询装进 DataAgentState 状态，连同上下文一起丢给 LangGraph 智能体图运行；
+    5. 图里每个节点（关键词提取、SQL 校验、执行 SQL 等）都能直接从 context 拿到数据库 / 向量工具，不用重复创建连接。
+    """
+
     async def test():
         # 创建状态信息
         state = DataAgentState(query="统计华北地区的销售总额")
-        # 创建上下文信息
-        context = DataAgentContext()
-        async  for chunk in  graph.astream(input=state,context=context,stream_mode="custom"):
-            print(chunk)
+        # 创建依赖对象
+        # 初始化客户端对象
+        embedding_client_manager.init()
+        qdrant_client_manager.init()
+        es_client_manager.init()
+        meta_mysql_client_manager.init()
+
+        # 获取session, 构建对象
+        # session_factory() 是 mysql 会话工厂，执行后会生成一个数据库会话（数据库连接会话）,
+        async with meta_mysql_client_manager.session_factory() as meta_session:
+            # 创建repository
+            #  embeddings：直接取现成实例，不需要再包一层类
+            embeddings = embedding_client_manager.embeddings
+            # qdrant、es仓储：只需要传入底层client客户端
+            column_qdrant_repository = ColumnQdrantRepository(qdrant_client_manager.client)
+            metric_qdrant_repository = MetricQdrantRepository(qdrant_client_manager.client)
+            value_es_repository = ValueEsRepository(es_client_manager.client)
+
+            # mysql仓储特殊：MySQL 仓储依赖数据库会话session（事务、单次会话隔离），不能直接用裸 client
+            # 把数据库会话传给仓储类，用来执行 SQL 读写。
+            meta_mysql_repository=MetaMysqlRepository(meta_session)
+
+            # 创建上下文信息
+            context = DataAgentContext(
+                # DataAgentContext 定义的 key 名称 = 上面代码提前创建好的向量化模型实例变量
+                embeddings=embeddings,
+                column_qdrant_repository=column_qdrant_repository,
+                metric_qdrant_repository=metric_qdrant_repository,
+                value_es_repository=value_es_repository,
+                meta_mysql_repository=meta_mysql_repository
+            )
+            async  for chunk in graph.astream(input=state, context=context, stream_mode="custom"):
+                print(chunk)
+
+        # 释放资源
+        """
+        原因：embedding_client_manager 是调用第三方 API（HuggingFace 接口），没有长连接本地资源，
+        不存在数据库 / 向量库 TCP 连接需要手动关闭；
+        而 qdrant、es、mysql 都是本地 / 远程长连接客户端，占用网络连接池，必须手动close()释放连接，
+        """
+        await qdrant_client_manager.close()
+        await es_client_manager.close()
+        await meta_mysql_client_manager.close()
     asyncio.run(test())

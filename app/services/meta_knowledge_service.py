@@ -13,7 +13,7 @@ from app.models.mysql.metric_info_mysql import MetricInfoMySQL
 from app.models.mysql.table_info_mysql import TableInfoMySQL
 from app.models.qdrant.column_info_qdrant import ColumnInfoQdrant
 from app.models.qdrant.metric_info_qdrant import MetricInfoQdrant
-from app.repositories.es.column_es_repository import ColumnEsRepository
+from app.repositories.es.values_es_repository import ValueEsRepository
 from app.repositories.mysql.dw_mysql_repository import DwMysqlRepository
 from app.repositories.mysql.meta_mysql_repository import MetaMysqlRepository
 from app.repositories.qdrant.column_qdrant_respository import ColumnQdrantRepository
@@ -26,7 +26,7 @@ class MetaKnowledgeService:
                  dw_mysql_repository: DwMysqlRepository,
                  column_qdrant_repository: ColumnQdrantRepository,
                  embeddings: HuggingFaceEndpointEmbeddings,
-                 column_es_repository: ColumnEsRepository,
+                 column_es_repository: ValueEsRepository,
                  metric_qdrant_repository: MetricQdrantRepository,
                  ):
         self.meta_mysql_repository = meta_mysql_repository
