@@ -7,7 +7,7 @@ from app.clients.embedding_client_manager import embedding_client_manager
 from app.clients.es_client_manager import es_client_manager
 from app.clients.mysql_client_manager import meta_mysql_client_manager, dw_mysql_client_manager
 from app.clients.qdrant_client_manager import qdrant_client_manager
-from app.repositories.es.column_es_repository import ColumnEsRepository
+from app.repositories.es.values_es_repository import ValueEsRepository
 from app.repositories.mysql.dw_mysql_repository import DwMysqlRepository
 from app.repositories.mysql.meta_mysql_repository import MetaMysqlRepository
 from app.repositories.qdrant.column_qdrant_respository import ColumnQdrantRepository
@@ -29,7 +29,7 @@ async def build(config_path: Path):
         meta_mysql_repository = MetaMysqlRepository(meta_session)
         dw_mysql_repository = DwMysqlRepository(dw_session)
         column_qdrant_repository=ColumnQdrantRepository(qdrant_client_manager.client)
-        column_es_repository=ColumnEsRepository(es_client_manager.client)
+        column_es_repository=ValueEsRepository(es_client_manager.client)
         metric_qdrant_repository=MetricQdrantRepository(qdrant_client_manager.client)
         # 创建业务层对象
         meta_knowledge_service=MetaKnowledgeService(

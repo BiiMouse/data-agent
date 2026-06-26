@@ -63,3 +63,16 @@ class ColumnQdrantRepository:
                 collection_name=self.collection_name,
                 points=points,
             )
+
+    async def search(self, embedding:list[float],score_threshold:float=0.6)->list[ColumnInfoQdrant]:
+        """
+        召回字段查询
+        :param keyword:
+        :return:
+        """
+        points = await self.client.query_points(
+            collection_name=self.collection_name,
+            query=embedding,
+            score_threshold=score_threshold
+        )
+        return [point.payload for point in points.points]

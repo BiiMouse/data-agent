@@ -50,3 +50,11 @@ class MetricQdrantRepository:
                 collection_name=self.collection_name,
                 points=points,
             )
+    # 现在 repository.search 返回 list[MetricInfoQdrant]，上层节点可以安心标注
+    async def search(self, embedding:list[float],score_threshold:float=0.6) -> list[MetricInfoQdrant]:
+        points=await self.client.query_points(
+            collection_name=self.collection_name,
+            query=embedding,
+            score_threshold=score_threshold,
+        )
+        return [point.payload for point in points.points]

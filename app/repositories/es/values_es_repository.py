@@ -3,7 +3,7 @@ from elasticsearch import AsyncElasticsearch
 from app.models.es.value_info_es import ValueInfoEs
 
 
-class ColumnEsRepository:
+class ValueEsRepository:
 
     es_index_name="data-agent-values"
 
@@ -88,7 +88,25 @@ class ColumnEsRepository:
                 operations=operations,
             )
 
-
-
+    async def search(self, keyword:str) -> list[ValueInfoEs]:
+        """
+        召回字段取值查询
+        :param keyword:
+        :return:
+        """
+        #全文检索匹配   ??? 这里的情况可能要解释下
+        resp = await self.client.search(
+            index=self.ex_index_name,
+            query={
+                "match": {
+                    "value": keyword
+                }
+            }
+        )
+        # 这个要看返回结构，不必要死记硬背
+        hits:list = resp["hits"]["hits"]
+        if not hits:
+            return []
+        return [hit['_source'] for hit in hits]
 
 
