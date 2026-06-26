@@ -32,3 +32,39 @@ class DwMysqlRepository:
         result = await self.session.execute(text(sql))
         # 获取结果scalar 讲第一列数据的所有行，封装到一个列表中
         return result.scalars().fetchall()
+
+    async def get_db_info(self):
+        """
+        查询数据信息
+        :return:
+        """
+        # 1.查询数据的版本
+        result =await self.session.execute(text(" SELECT VERSION() "))
+        # 获取单行单列的数据
+        version=result.scalar()
+        # 2.获取方言
+        dialect=self.session.get_bind().dialect.name
+
+        return {"version":version,"dialect":dialect}
+
+    async def validate_sql(self, sql:str):
+        """
+        校验sql语句
+        :param sql:
+        :return:
+        """
+
+        await self.session.execute(text(sql))
+
+    async def execute_sql(self, sql:str):
+
+        """
+        执行sql
+        :param sql:
+        :return:
+        """
+        # 执行sql
+        result=await self.session.execute(text(sql))
+        # [(row),(row),(row)]->[{mapping},{mapping},{mapping}]
+        # 转换类型  这是什么含义??????????
+        return [dict(row) for row in result.mappings().fetchall()]

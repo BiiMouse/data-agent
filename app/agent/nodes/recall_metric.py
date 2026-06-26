@@ -31,7 +31,7 @@ async def recall_metric(state:DataAgentState,runtime:Runtime[DataAgentContext]):
         keywords=state["keywords"]
 
         #扩展关键词
-        tml = await loader_prompt("extend_keywords_for_metric_recall.prompt")
+        tml = await loader_prompt("extend_keywords_for_metric_recall")
         #1.1定义提示词模板
         prompt = PromptTemplate(template=tml, input_variables=["query"])
         #1.2构造结果转化器 强制LLM输出纯标准JSON，自动把JSON 文本解析成 Python list/dict；

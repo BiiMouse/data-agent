@@ -154,7 +154,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             # 收集表信息对象
             table_infos.append(table_info)
 
-        logger.info(f"合并表信息完成，表信息{[table_info['name'] for table_info in table_infos]}")
+        logger.info(f"合并表信息完成，表信息{[table_info.name for table_info in table_infos]}")
 
         # 处理指标信息，构建指标数据结构
         for retrieved_metric in retrieved_metrics:
@@ -163,7 +163,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             # 收集指标数据
             metric_infos.append(metric_info_state)
 
-        logger.info(f"合并指标信息完成，表信息{[metric_info['name'] for metric_info in metric_infos]}")
+        logger.info(f"合并指标信息完成，指标信息{[metric_info.name for metric_info in metric_infos]}")
 
 
         #### 至此，我们获得了2个关键集合

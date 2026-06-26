@@ -48,7 +48,7 @@ async def recall_value(state:DataAgentState,runtime:Runtime[DataAgentContext]):
         #执行chain链
         result=await chain.ainvoke({"query":query})
         #合并关键词
-        keywords = set(result+keywords)
+        keywords = set(keywords+result)
 
         #定义字典结构接收召回结果
         retrieved_value_map: dict[str, ValueInfoEs] = {}

@@ -3,7 +3,14 @@ from typing import TypedDict
 from app.models.es.value_info_es import ValueInfoEs
 from app.models.qdrant.column_info_qdrant import ColumnInfoQdrant
 from app.models.qdrant.metric_info_qdrant import MetricInfoQdrant
+class DateInfoState(TypedDict):
+    date: str
+    weekday: str
+    quarter: str
 
+class DBInfoState(TypedDict):
+    version: str
+    dialect: str
 
 """
 # 专门用来标准化描述Qdrant 向量库中存储的[字段]元数据
@@ -20,9 +27,9 @@ class ColumnInfoState(TypedDict):
     name: str
     type: str
     role: str
-    examples: str
+    examples: list
     description: str
-    alias: str
+    alias: list[str]
 
 # 表信息封装实体
 # 每条 ColumnInfoState 包含 name/type/ 描述 一整套完整字段信息，每条都是独立对象；
@@ -34,14 +41,12 @@ class TableInfoState(TypedDict):
     description: str
     columns: list[ColumnInfoState]
 
-
-# relevant_columns存储独立字段名，需逐条提取用于SQL拼接，用列表可清晰区分每个字段、避免字符串分割出错。
+# 指标信息封装实体
 class MetricInfoState(TypedDict):
     name: str
     description: str
     relevant_columns: list[str]
-    alias: str
-
+    alias: list[str]
 
 class DataAgentState(TypedDict):
     query: str
@@ -65,3 +70,6 @@ class DataAgentState(TypedDict):
     retrieved_values: list[ValueInfoEs]
     table_infos: list[TableInfoState]
     metric_infos: list[MetricInfoState]
+    date_info: DateInfoState
+    db_info: DBInfoState
+    sql: str

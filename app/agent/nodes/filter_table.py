@@ -50,27 +50,24 @@ async def filter_table(state:DataAgentState,runtime:Runtime[DataAgentContext]):
         # 遍历合并的表信息，过滤合并的表
         for table_info in table_infos[:]:
             # 获取表名
-            table_name:str = table_info["name"]
+            table_name = table_info["name"]
             # 判断，表名是否在大模型给出的过滤器（必要信息）
             if table_name not in result:
                 # 从合并的表信息过滤掉当前表
                 table_infos.remove(table_info)
-
-            # 获取当前表—对应的字段列表
-            columns = table_info["columns"]
-            # 遍历字段列表
-            for column in columns[:]:
-                # 获取字段名
-                column_name = column["name"]
-                # 判断字段名是否在大模型给出的过滤器（必要信息）
-                if column_name not in result[table_name]:
-                    # 从合并的表信息过滤掉当前字段，得同时判断下表存在（有可能表在上个阶段被删除了）
-                    table_info["columns"].remove(column)
+            else:
+                # 获取当前表合并后对应的字段列表
+                for column in table_info["columns"][:]:
+                    # 获取字段名称
+                    column_name = column["name"]
+                    # 判断
+                    if column_name not in result[table_name]:
+                        table_info["columns"].remove(column)
 
         logger.info(f"过滤后的表信息{[table_info['name'] for table_info in table_infos]}")
 
         return {"table_infos": table_infos}
 
     except Exception as e:
-        logger.error(f"过滤表信息和过滤指标信息时发生异常：{str(e)}")
+        logger.error(f"过滤表信息异常：{str(e)}")
         raise

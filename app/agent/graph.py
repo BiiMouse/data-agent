@@ -20,8 +20,9 @@ from app.agent.nodes.validate_sql import validate_sql
 from app.agent.state import DataAgentState
 from app.clients.embedding_client_manager import embedding_client_manager
 from app.clients.es_client_manager import es_client_manager
-from app.clients.mysql_client_manager import meta_mysql_client_manager
+from app.clients.mysql_client_manager import meta_mysql_client_manager, dw_mysql_client_manager
 from app.clients.qdrant_client_manager import qdrant_client_manager
+from app.repositories.mysql.dw_mysql_repository import DwMysqlRepository
 from app.repositories.es.values_es_repository import ValueEsRepository
 from app.repositories.mysql.meta_mysql_repository import MetaMysqlRepository
 from app.repositories.qdrant.column_qdrant_respository import ColumnQdrantRepository
@@ -94,10 +95,11 @@ if __name__ == '__main__':
         qdrant_client_manager.init()
         es_client_manager.init()
         meta_mysql_client_manager.init()
+        dw_mysql_client_manager.init()
 
-        # 获取session, 构建对象
+        # 获取session必须有, 构建对象
         # session_factory() 是 mysql 会话工厂，执行后会生成一个数据库会话（数据库连接会话）,
-        async with meta_mysql_client_manager.session_factory() as meta_session:
+        async with meta_mysql_client_manager.session_factory() as meta_session,dw_mysql_client_manager.session_factory() as dw_session:
             # 创建repository
             #  embeddings：直接取现成实例，不需要再包一层类
             embeddings = embedding_client_manager.embeddings
@@ -109,6 +111,8 @@ if __name__ == '__main__':
             # mysql仓储特殊：MySQL 仓储依赖数据库会话session（事务、单次会话隔离），不能直接用裸 client
             # 把数据库会话传给仓储类，用来执行 SQL 读写。
             meta_mysql_repository=MetaMysqlRepository(meta_session)
+            # 补充repository创建
+            dw_mysql_repository=DwMysqlRepository(dw_session)
 
             # 创建上下文信息
             context = DataAgentContext(
@@ -117,7 +121,8 @@ if __name__ == '__main__':
                 column_qdrant_repository=column_qdrant_repository,
                 metric_qdrant_repository=metric_qdrant_repository,
                 value_es_repository=value_es_repository,
-                meta_mysql_repository=meta_mysql_repository
+                meta_mysql_repository=meta_mysql_repository,
+                dw_mysql_repository=dw_mysql_repository
             )
             async  for chunk in graph.astream(input=state, context=context, stream_mode="custom"):
                 print(chunk)
@@ -131,4 +136,5 @@ if __name__ == '__main__':
         await qdrant_client_manager.close()
         await es_client_manager.close()
         await meta_mysql_client_manager.close()
+        await dw_mysql_client_manager.close()
     asyncio.run(test())
