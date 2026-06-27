@@ -10,36 +10,36 @@ logging:
     level: INFO
 
 db_meta:
-  host: localhost
+  host: 192.168.245.129
   port: 3306
   user: atguigu
   password: Atguigu.123
   database: meta
 
 db_dw:
-  host: localhost
+  host: 192.168.245.129
   port: 3306
   user: atguigu
   password: Atguigu.123
   database: dw
 
 qdrant:
-  host: localhost
+  host: 192.168.245.129
   port: 6333
   embedding_size: 1024
 
 embedding:
-  host: localhost
+  host: 192.168.245.129
   port: 8081
   model: BAAI/bge-large-zh-v1.5
 
 
 es:
-  host: localhost
+  host: 192.168.245.129
   port: 9200
   index_name: data_agent
 
 
 llm:
-  model_name: deepseek-chat
-  api_key: sk-24b7d9bf39604287ba943d7faf9ff87d
+  model_name: deepseek-v4-pro
+  api_key: sk-7eef6e2bd2e247548e4627e3fdc6de76

@@ -59,7 +59,6 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
                     # 缺的从mysql复查回了，将类型对齐后，我们就可以在召回字段列表中加入“它”了
                     # relevant_column 和 column_info_qdrant["id"] 是一个东西
                     retrieved_columns_map[relevant_column] = column_info_qdrant
-
         #2.判断召回的字段取值对应的字段信息是否已经存在, 将不存在的查出来，还是要添加到召回字段列表中
         for retrieved_value in retrieved_values:
             # 获得当前值对应的 对象的字段id
@@ -132,6 +131,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             # ？类型转换写在table遍历循环内部仅为代码简洁性考量
             #  1. 所有存储层数据修复、主外键补全逻辑已在循环外全部完成，循环仅读取完整后的只读存储数据，不再修改原始字段、不再查询数据库；
             #  2. 单张表与下属字段天然绑定，就地完成存储模型→运行态State转换，直接组装TableInfoState，避免二次分组遍历，简化代码。
+
             columns_state = [
                 ColumnInfoState(
                     name= column['name'],
@@ -145,6 +145,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             # 此时还没有表的实体信息，应该通过table_id查出来
             table_info_mysql:TableInfoMySQL = await meta_mysql_repository.get_table_by_id(table_id)
             # 转化结构
+
             table_info = TableInfoState(
                 name = table_info_mysql.name,
                 role = table_info_mysql.role,
@@ -153,8 +154,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             )
             # 收集表信息对象
             table_infos.append(table_info)
-
-        logger.info(f"合并表信息完成，表信息{[table_info.name for table_info in table_infos]}")
+        # logger.info(f"合并表信息完成，表信息{[table_info.name for table_info in table_infos]}")
 
         # 处理指标信息，构建指标数据结构
         for retrieved_metric in retrieved_metrics:
@@ -163,7 +163,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             # 收集指标数据
             metric_infos.append(metric_info_state)
 
-        logger.info(f"合并指标信息完成，指标信息{[metric_info.name for metric_info in metric_infos]}")
+        # logger.info(f"合并指标信息完成，指标信息{[metric_info.name for metric_info in metric_infos]}")
 
 
         #### 至此，我们获得了2个关键集合

@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from app.api.routers.query_router import query_router
 from app.api.schemas.query_schema import QuerySchema
 from app.core.context import request_id_ctx_var
-from app.core import lifespan
+from app.core.lifespan import lifespan
 
 """
 需求：初始化并配置 FastAPI 应用的核心基础设施
