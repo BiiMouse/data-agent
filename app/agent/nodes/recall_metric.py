@@ -65,7 +65,7 @@ async def recall_metric(state:DataAgentState,runtime:Runtime[DataAgentContext]):
         # 获取召回指标列表
         retrieved_metrics = list(retrieved_metric_map.values())
 
-        logger.info(f"指标召回学习成功，{list(retrieved_metric_map.keys())}")
+        logger.info(f"指标召回信息成功，{list(retrieved_metric_map.keys())}")
 
         return {"retrieved_metrics": retrieved_metrics}
     except Exception as e:

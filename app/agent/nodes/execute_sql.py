@@ -20,6 +20,7 @@ async def execute_sql(state:DataAgentState,runtime:Runtime[DataAgentContext]):
         dw_mysql_repository=runtime.context["dw_mysql_repository"]
         # 获取sql
         sql = state["sql"]
+        logger.info(f"[SQL][SQL][SQL]: {str(sql)}")
         # 执行sql
         result = await dw_mysql_repository.execute_sql(sql)
 

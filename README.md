@@ -1,4 +1,8 @@
- 📋 Git 工作流程
+日常用法：
+  - 启动：uv run python main.py（1 步，端口空闲时）
+  - 重启：先停旧进程（终端 Ctrl+C，或 taskkill /F /IM python.exe）再运行上面命令
+  - 
+📋 Git 工作流程
 
   日常开发（在 dev 分支）
 

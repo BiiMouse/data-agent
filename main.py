@@ -60,3 +60,9 @@ async def add_request_context_var(request:Request, call_next):
 
     return response
 
+# 应用启动入口：运行 main.py 即可拉起服务
+# 命令：uv run python main.py
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+

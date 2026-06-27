@@ -56,7 +56,7 @@ async def generate_sql(state:DataAgentState,runtime:Runtime[DataAgentContext]):
             "db_info": yaml.dump(db_info, allow_unicode=True, sort_keys=False),
         })
 
-        logger.info(f"生成的sql语句\n：{sql}")
+        logger.info(f"生成的[sql]语句\n：{sql}")
         return {"sql": sql}
 
     except Exception as e:

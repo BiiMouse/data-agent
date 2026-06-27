@@ -18,7 +18,6 @@ async def filter_metric(state:DataAgentState,runtime:Runtime[DataAgentContext]):
     try:
         # 获取用户问题
         query = state["query"]
-        # 获取合并的表信息
         metric_infos:list[MetricInfoState] = state["metric_infos"]
 
         # 1.llm根据合并信息，筛选跟问题相关的内容
