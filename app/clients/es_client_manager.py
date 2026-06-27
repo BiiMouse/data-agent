@@ -2,7 +2,6 @@ import asyncio
 from typing import Optional
 
 from elasticsearch import AsyncElasticsearch
-from win32comext.mapi.mapitags import pidAttachReadOnlyMin
 
 from app.conf.app_config import app_config, ESConfig
 

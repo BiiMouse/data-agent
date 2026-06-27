@@ -96,7 +96,7 @@ class ValueEsRepository:
         """
         #全文检索匹配   ??? 这里的情况可能要解释下
         resp = await self.client.search(
-            index=self.ex_index_name,
+            index=self.es_index_name,
             query={
                 "match": {
                     "value": keyword

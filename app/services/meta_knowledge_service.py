@@ -1,6 +1,6 @@
 import uuid
+from pathlib import Path
 
-from Lib.pathlib import Path
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from omegaconf import OmegaConf
 
@@ -236,7 +236,7 @@ class MetaKnowledgeService:
                 alias=metric.alias
             )
             metric_infos.append(metric_info)
-            # 构建字段指标关联结构？？？？
+            # 构建字段指标关联结构
             for relevant_column in metric.relevant_columns:
                 column_metric = ColumnMetricMySQL(
                     column_id=relevant_column,

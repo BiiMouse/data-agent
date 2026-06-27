@@ -64,8 +64,8 @@ class MetaMysqlRepository:
         sql = """
             select*
             from column_info
-            where role in ('primary_key', 'foreign_key'
-            and table_id = :table_id)
+            where role in ('primary_key', 'foreign_key')
+            and table_id = :table_id
         """
         # 设置封装结构
         query = Select(ColumnInfoMySQL).from_statement(text(sql))

@@ -1,7 +1,6 @@
 import asyncio
+import argparse
 from pathlib import Path
-
-from Lib import argparse
 
 from app.clients.embedding_client_manager import embedding_client_manager
 from app.clients.es_client_manager import es_client_manager
