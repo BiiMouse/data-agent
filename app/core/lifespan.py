@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
 
 from app.clients.qdrant_client_manager import qdrant_client_manager
 from app.clients.embedding_client_manager import embedding_client_manager
@@ -35,7 +36,7 @@ from app.clients.mysql_client_manager import meta_mysql_client_manager, dw_mysql
         - 官方推荐：FastAPI 0.93.0+ 推荐使用 lifespan 而非事件监听器，更符合依赖注入思想
 """
 @asynccontextmanager
-async def lifespan():
+async def lifespan(app: FastAPI):  # FastAPI会传递app参数，即使不使用也要接收
     # 创建依赖对象
     # 初始化客户端对象
     embedding_client_manager.init()
