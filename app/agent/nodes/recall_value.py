@@ -47,6 +47,8 @@ async def recall_value(state:DataAgentState,runtime:Runtime[DataAgentContext]):
         chain=prompt|llm|output_parser
         #执行chain链
         result=await chain.ainvoke({"query":query})
+        # 打印LLM扩展出的关键词，便于排查ES召回命中情况
+        logger.info(f"LLM扩展关键词：{result}")
         #合并关键词
         keywords = set(keywords+result)
 
@@ -75,3 +77,28 @@ async def recall_value(state:DataAgentState,runtime:Runtime[DataAgentContext]):
     except Exception as e:
         logger.error(f"召回字段值发生异常：{str(e)}")
         raise
+if __name__ == "__main__":
+    from langgraph.runtime import Runtime
+    from app.clients.es_client_manager import es_client_manager
+    from app.repositories.es.values_es_repository import ValueEsRepository
+
+    async def test():
+        # recall_value 只依赖 value_es_repository（embeddings 已注释未用），故仅初始化 ES
+        es_client_manager.init()
+        try:
+            value_es_repository = ValueEsRepository(es_client_manager.client)
+            # 仅填该节点实际用到的 context key
+            context = {"value_es_repository": value_es_repository}
+            # 手动构造 runtime；stream_writer 默认为 no-op，writer({"stage":...}) 不会报错
+            runtime = Runtime(context=context)
+
+            state = DataAgentState(
+                query="一共有多少会员等级",
+                keywords=['会员', '等级']
+            )
+            result = await recall_value(state, runtime)
+            print("返回结果:", result)
+        finally:
+            await es_client_manager.close()
+
+    asyncio.run(test())
